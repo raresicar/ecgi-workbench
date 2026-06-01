@@ -1,0 +1,17 @@
+{
+  "_about": "Four-parameter box experiment (Boulakia §3.1/§4.2): the parameters the ECG is most sensitive to — tau_in, C_m (c_m), A_m (a_m), and tau_close^RV (tau_close_rv). Each sample draws these four UNIFORMLY from a small box of half-width box_half_width_frac around the ukb/pipeline/params.json values; every other parameter is held fixed at its params.json value. Healthy monodomain (no infarct). Separate generator/POD/extended basis from the infarction experiment — only ukb/stabFEM/ is shared.",
+
+  "_comment_time": "Simulation window and step. Snapshots are retained over (0, t_end].",
+  "t_end_ms": 150.0,
+  "dt_ms": 0.5,
+
+  "_comment_samples": "n_samples random param combinations; n_snapshots HSP snapshots per sample, evenly spaced in (0, t_end] (same times for every sample — the params differ).",
+  "n_samples": 100,
+  "n_snapshots": 40,
+
+  "_comment_box": "Uniform box half-width as a FRACTION of each base value: param ~ U[v*(1-frac), v*(1+frac)]. 0.2 = ±20%.",
+  "box_half_width_frac": 0.2,
+  "varied_params": ["tau_in", "c_m", "a_m", "tau_close_rv"],
+
+  "base_seed": 20260530
+}

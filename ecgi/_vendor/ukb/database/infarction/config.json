@@ -1,0 +1,26 @@
+{
+  "_about": "Infarction-experiment database config. Physical / Mitchell-Schaeffer parameters come from ukb/pipeline/params.json (the shared single source of truth); this file holds only the knobs specific to THIS experiment: simulation window, infarct geometry, and the stratified snapshot schedule. Follows Boulakia/Schenone/Gerbeau arXiv:1111.5926v2 section 3.3, with tau_out divided by 100 (paper uses 10).",
+
+  "_comment_time": "Simulation window. 400 ms / 0.5 ms matches both the paper and params.json (t_end_ecg_ms / dt_ms).",
+  "t_end_ms": 400.0,
+  "dt_ms": 0.5,
+
+  "_comment_infarct_model": "tau_out_factor multiplies tau_out inside the scar ball; 0.01 = divide by 100. Healthy tissue keeps the params.json tau_out.",
+  "tau_out_factor": 0.01,
+
+  "_comment_centres": "n_centers infarct positions, clustered on the FRONT/visible epicardial wall seen in the GIFs (camera view_init(elev=18, azim=-62), scoring direction view_dir), à la Boulakia Fig 9. Candidates are EPI vertices whose front-facing score is above score_percentile; a high percentile keeps them in a compact anterior cap. n_centers of them are chosen by farthest-point sampling so they tile that cap rather than scatter around the whole heart.",
+  "n_centers": 18,
+  "score_percentile": 88.0,
+  "view_dir": [0.45, -0.84, 0.31],
+
+  "_comment_radius": "Scar ball radius (mm) drawn uniformly per infarct.",
+  "radius_min_mm": 6.0,
+  "radius_max_mm": 16.0,
+
+  "_comment_snapshots": "Stratified HSP snapshots: window_split_ms divides [0, t_end] into an early window (depolarisation, where most variation is) and a late window (plateau / repolarisation, where the infarct ST/T signature lives). [n_early, n_late] snapshots per case. Boulakia: ~100 from the healthy case, ~50 per infarct, split half/half.",
+  "window_split_ms": 100.0,
+  "healthy_snapshots": [50, 50],
+  "infarct_snapshots": [25, 25],
+
+  "base_seed": 20260529
+}

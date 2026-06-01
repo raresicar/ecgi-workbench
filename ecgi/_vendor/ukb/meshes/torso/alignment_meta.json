@@ -1,0 +1,74 @@
+{
+  "source_body": "/home/rares/projects/stabFEM-cauchy/TrainingGeometries/P001_torso.mat",
+  "source_heart": "/home/rares/projects/stabFEM-cauchy/ukb/meshes/heart/ED_clipped.msh",
+  "translation": [
+    24.118748685836696,
+    -43.6531709130789,
+    1811.8644931206006
+  ],
+  "target_center_p001_epi": [
+    31.066137236084455,
+    -43.237965451055665,
+    1809.3211852207291
+  ],
+  "source_center_ukb_heart": [
+    6.9473885502477595,
+    0.4152054620232346,
+    -2.543307899871486
+  ],
+  "body_bounds_min": [
+    -181.4432,
+    -111.15584,
+    1587.63851
+  ],
+  "body_bounds_max": [
+    187.77003,
+    115.72742,
+    1980.70149
+  ],
+  "heart_bounds_min": [
+    -34.46525312132769,
+    -77.881360809201,
+    1766.2015124584266
+  ],
+  "heart_bounds_max": [
+    77.85951501221092,
+    12.442208321107685,
+    1869.8799773992623
+  ],
+  "margin_min": [
+    146.9779468786723,
+    33.274479190799,
+    178.56300245842658
+  ],
+  "margin_max": [
+    109.91051498778907,
+    103.28521167889231,
+    110.8215126007376
+  ],
+  "physical_groups": {
+    "GammaHeartDirichlet": 1,
+    "GammaHeartNeumann": 3,
+    "GammaBody": 2,
+    "Torso": 10
+  },
+  "closed_shell_diagnostics": {
+    "n_shell_vertices": 4914,
+    "n_dirichlet_triangles": 9678,
+    "n_neumann_triangles": 146,
+    "n_lv_ring": 60,
+    "n_rv_ring": 90,
+    "n_lv_valve_triangles": 58,
+    "n_rv_valve_triangles": 88,
+    "base_plane_normal": [
+      0.7160843730109442,
+      -0.5443946400124421,
+      -0.4368725748490591
+    ],
+    "base_plane_origin": [
+      -18.75578205428119,
+      12.140540910415035,
+      14.701263514764799
+    ]
+  }
+}

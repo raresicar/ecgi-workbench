@@ -1,0 +1,479 @@
+{
+  "pod_basis": "ukb/database/infarction/pod_basis/pod_basis.npz",
+  "torso_mesh": "/home/rares/projects/stabFEM-cauchy/ukb/meshes/torso/p001_ukb_torso.msh",
+  "heart_mesh": "/home/rares/projects/stabFEM-cauchy/ukb/meshes/heart/ED_clipped.msh",
+  "n_modes_extended": 34,
+  "n_workers": 17,
+  "sigma_t": 0.0006,
+  "n_torso_dofs": 14737,
+  "n_gamma_heart_vertices": 4914,
+  "n_gamma_heart_outer_vertices": 4914,
+  "n_gamma_heart_inner_vertices": 0,
+  "gamma_heart_boundary_note": "outer = Dirichlet from POD mode (EPI\u222aBASE side); inner = natural Neumann (LV/RV cavity walls sealed).",
+  "n_gamma_body_vertices": 2678,
+  "hsp_match_max_distance": 4.548583596397072e-13,
+  "outputs": {
+    "extended_modes_summary": "ukb/database/infarction/extended_pod_basis/extended_pod_modes.npz",
+    "per_mode_files": [
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_001.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_002.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_003.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_004.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_005.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_006.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_007.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_008.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_009.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_010.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_011.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_012.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_013.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_014.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_015.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_016.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_017.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_018.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_019.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_020.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_021.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_022.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_023.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_024.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_025.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_026.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_027.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_028.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_029.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_030.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_031.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_032.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_033.npz",
+      "ukb/database/infarction/extended_pod_basis/extended_pod_mode_034.npz"
+    ],
+    "bspm_montage": "ukb/database/infarction/extended_pod_basis/bspm_extended_pod_modes_plotted.png",
+    "plotted_modes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      20,
+      30
+    ]
+  },
+  "mode_ranges": [
+    {
+      "mode": 1,
+      "torso_range": [
+        -0.01018512851155198,
+        0.009057580548157215
+      ],
+      "bsp_range": [
+        -0.00564943495167519,
+        0.0051467696757707465
+      ],
+      "singular_value": 54365.97037545485
+    },
+    {
+      "mode": 2,
+      "torso_range": [
+        -0.013034924041355637,
+        0.008275388825733553
+      ],
+      "bsp_range": [
+        -0.004508196516807623,
+        0.002336818524376419
+      ],
+      "singular_value": 28182.683073539683
+    },
+    {
+      "mode": 3,
+      "torso_range": [
+        -0.010038157762083177,
+        0.013804208816490396
+      ],
+      "bsp_range": [
+        -0.0015632526981053634,
+        0.0024900552087574438
+      ],
+      "singular_value": 18683.07791272792
+    },
+    {
+      "mode": 4,
+      "torso_range": [
+        -0.014281955498519893,
+        0.009720113852561121
+      ],
+      "bsp_range": [
+        -0.0016482065114196251,
+        0.0010663153915487584
+      ],
+      "singular_value": 13607.56836928936
+    },
+    {
+      "mode": 5,
+      "torso_range": [
+        -0.013482334825388291,
+        0.01585193054813538
+      ],
+      "bsp_range": [
+        -0.001131682358347426,
+        0.0009429179017498918
+      ],
+      "singular_value": 10494.891415636017
+    },
+    {
+      "mode": 6,
+      "torso_range": [
+        -0.03971725311719643,
+        0.010728041950795974
+      ],
+      "bsp_range": [
+        -0.007311996666520631,
+        0.0009400122332400592
+      ],
+      "singular_value": 9542.540311939678
+    },
+    {
+      "mode": 7,
+      "torso_range": [
+        -0.016533985386632595,
+        0.014392262440309557
+      ],
+      "bsp_range": [
+        -0.002022038330997285,
+        0.0018115449444571596
+      ],
+      "singular_value": 8541.638480863536
+    },
+    {
+      "mode": 8,
+      "torso_range": [
+        -0.03356754074867442,
+        0.03370505565080206
+      ],
+      "bsp_range": [
+        -0.0006616752569416394,
+        0.00576248625464777
+      ],
+      "singular_value": 8150.0112784887915
+    },
+    {
+      "mode": 9,
+      "torso_range": [
+        -0.01487174482565506,
+        0.01578632280349598
+      ],
+      "bsp_range": [
+        -0.0010329931811729975,
+        0.0009287659516902143
+      ],
+      "singular_value": 7263.639354613612
+    },
+    {
+      "mode": 10,
+      "torso_range": [
+        -0.02442953161443642,
+        0.02524636078175646
+      ],
+      "bsp_range": [
+        -0.0025700589861723734,
+        0.0021787696056007927
+      ],
+      "singular_value": 6589.555105406182
+    },
+    {
+      "mode": 11,
+      "torso_range": [
+        -0.021411862437762882,
+        0.027097231739771816
+      ],
+      "bsp_range": [
+        -0.0034513458888288094,
+        0.001295095336842758
+      ],
+      "singular_value": 6431.58566639528
+    },
+    {
+      "mode": 12,
+      "torso_range": [
+        -0.034125653841957426,
+        0.019624788474463164
+      ],
+      "bsp_range": [
+        -0.006873774016896952,
+        0.00034807545947768245
+      ],
+      "singular_value": 5917.265694473462
+    },
+    {
+      "mode": 13,
+      "torso_range": [
+        -0.024217866545372214,
+        0.0317611726561318
+      ],
+      "bsp_range": [
+        -0.002668950039548139,
+        0.004353804732893538
+      ],
+      "singular_value": 5818.337374783991
+    },
+    {
+      "mode": 14,
+      "torso_range": [
+        -0.014328448788811218,
+        0.014733026655808225
+      ],
+      "bsp_range": [
+        -0.0004807390909382676,
+        0.0009507172306067736
+      ],
+      "singular_value": 5506.414523901632
+    },
+    {
+      "mode": 15,
+      "torso_range": [
+        -0.02041096252132087,
+        0.024518622431589206
+      ],
+      "bsp_range": [
+        -0.0004845279867090679,
+        0.0015672656118191134
+      ],
+      "singular_value": 4923.89042360179
+    },
+    {
+      "mode": 16,
+      "torso_range": [
+        -0.02892776151986746,
+        0.02615569134723538
+      ],
+      "bsp_range": [
+        -0.0006199537663232274,
+        0.0023153219671548744
+      ],
+      "singular_value": 4709.594833696784
+    },
+    {
+      "mode": 17,
+      "torso_range": [
+        -0.029576994626911306,
+        0.029087932531713486
+      ],
+      "bsp_range": [
+        -0.0006125563305606797,
+        0.002414520201594638
+      ],
+      "singular_value": 4321.293877993695
+    },
+    {
+      "mode": 18,
+      "torso_range": [
+        -0.024782498930652437,
+        0.022825918050549038
+      ],
+      "bsp_range": [
+        -0.000731777762922961,
+        0.001231609595037821
+      ],
+      "singular_value": 4273.983575392495
+    },
+    {
+      "mode": 19,
+      "torso_range": [
+        -0.032849981266163356,
+        0.037814282217478755
+      ],
+      "bsp_range": [
+        -0.002724570091934671,
+        0.00045602032230769243
+      ],
+      "singular_value": 4138.717613380831
+    },
+    {
+      "mode": 20,
+      "torso_range": [
+        -0.032967207836308514,
+        0.05211454228880233
+      ],
+      "bsp_range": [
+        -0.0005898934785322186,
+        0.005001349748475731
+      ],
+      "singular_value": 3762.3768261953633
+    },
+    {
+      "mode": 21,
+      "torso_range": [
+        -0.023504836690056038,
+        0.020711935854269267
+      ],
+      "bsp_range": [
+        -0.0016322094401401736,
+        1.462553638416629e-05
+      ],
+      "singular_value": 3726.8386003987107
+    },
+    {
+      "mode": 22,
+      "torso_range": [
+        -0.03253955584066773,
+        0.04767418841055295
+      ],
+      "bsp_range": [
+        -0.0003972034039331449,
+        0.003522680862073979
+      ],
+      "singular_value": 3585.7214827718526
+    },
+    {
+      "mode": 23,
+      "torso_range": [
+        -0.026062925142245955,
+        0.020232633833745687
+      ],
+      "bsp_range": [
+        -0.0012385018883058294,
+        -3.216870521331594e-05
+      ],
+      "singular_value": 3480.9139389191973
+    },
+    {
+      "mode": 24,
+      "torso_range": [
+        -0.03244472221248517,
+        0.042529511443586805
+      ],
+      "bsp_range": [
+        -0.0005366590768663793,
+        0.0010972710166941328
+      ],
+      "singular_value": 3207.332072445598
+    },
+    {
+      "mode": 25,
+      "torso_range": [
+        -0.025471999026789614,
+        0.025449574767646616
+      ],
+      "bsp_range": [
+        0.0003847498431366839,
+        0.001344700698941865
+      ],
+      "singular_value": 3037.2147860555947
+    },
+    {
+      "mode": 26,
+      "torso_range": [
+        -0.03636933927978331,
+        0.03484520731236494
+      ],
+      "bsp_range": [
+        -0.0011262563272005082,
+        0.0006377207905135558
+      ],
+      "singular_value": 2920.376222921683
+    },
+    {
+      "mode": 27,
+      "torso_range": [
+        -0.04790713607010805,
+        0.05431233693789726
+      ],
+      "bsp_range": [
+        -0.0009921760091434193,
+        0.0005626880291594199
+      ],
+      "singular_value": 2812.3435532732565
+    },
+    {
+      "mode": 28,
+      "torso_range": [
+        -0.029813110867212823,
+        0.02456867452838589
+      ],
+      "bsp_range": [
+        4.606971580975303e-05,
+        0.0012138601452771818
+      ],
+      "singular_value": 2756.289685586139
+    },
+    {
+      "mode": 29,
+      "torso_range": [
+        -0.049852209235198945,
+        0.03940934247688353
+      ],
+      "bsp_range": [
+        -0.0026861665739843377,
+        0.0005628110848009195
+      ],
+      "singular_value": 2628.3761552420483
+    },
+    {
+      "mode": 30,
+      "torso_range": [
+        -0.03528778234209156,
+        0.04413674448058337
+      ],
+      "bsp_range": [
+        -0.0006854760250139622,
+        0.0011180247297037016
+      ],
+      "singular_value": 2583.028413236844
+    },
+    {
+      "mode": 31,
+      "torso_range": [
+        -0.06669879062333792,
+        0.02315478352214578
+      ],
+      "bsp_range": [
+        -0.0022872498164741967,
+        -0.00012652941484797515
+      ],
+      "singular_value": 2515.0310793383815
+    },
+    {
+      "mode": 32,
+      "torso_range": [
+        -0.033381195056296505,
+        0.03419776155041093
+      ],
+      "bsp_range": [
+        -0.0014315432616252603,
+        0.0010156133983930278
+      ],
+      "singular_value": 2458.9284389860886
+    },
+    {
+      "mode": 33,
+      "torso_range": [
+        -0.04617843196977884,
+        0.04580635131373087
+      ],
+      "bsp_range": [
+        -0.00098196875672525,
+        0.00046568622392531507
+      ],
+      "singular_value": 2275.5297854710225
+    },
+    {
+      "mode": 34,
+      "torso_range": [
+        -0.017837269671367968,
+        0.0193217733825727
+      ],
+      "bsp_range": [
+        -0.0010709072822629236,
+        -0.00011679793989488522
+      ],
+      "singular_value": 2202.579464066284
+    }
+  ]
+}

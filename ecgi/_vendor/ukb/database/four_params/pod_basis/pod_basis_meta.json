@@ -1,0 +1,22 @@
+{
+  "samples_dir": "ukb/database/four_params/samples",
+  "sample_glob": "sample_*.npz",
+  "heart_mesh": "/home/rares/projects/stabFEM-cauchy/ukb/meshes/heart/ED_clipped.msh",
+  "boundary_tags": [
+    3,
+    4
+  ],
+  "boundary_tags_note": "POD lives on EPI\u222aBASE only (heart-torso interface); LV/RV endo are excluded.",
+  "n_union_dofs": 9529,
+  "n_boundary_dofs": 4914,
+  "n_inner_dofs_excluded": 4615,
+  "n_snapshots_total": 4000,
+  "n_modes": 241,
+  "rank_requested": null,
+  "eigenvalue_rtol": 1e-08,
+  "centered": false,
+  "orthonormality_max_abs_error": 1.6823496779699854e-09,
+  "snapshot_matrix": "ukb/database/four_params/pod_basis/snapshot_matrix.npz",
+  "mass_matrix": "ukb/database/four_params/pod_basis/boundary_mass_matrix.npz",
+  "pod_basis": "ukb/database/four_params/pod_basis/pod_basis.npz"
+}

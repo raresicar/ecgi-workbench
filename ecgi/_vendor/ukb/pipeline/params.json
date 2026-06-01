@@ -1,0 +1,46 @@
+{
+  "_about": "Single source of truth for the UKB forward-pipeline physical / simulation parameters",
+
+  "_comment_heart_conductivity": "Isotropic heart conductivities (S/cm)",
+  "sigma_i": 3.0e-3,
+  "sigma_e": 3.0e-3,
+
+  "_comment_membrane": "Membrane capacitance C_m (mF) and surface-to-volume ratio A_m (cm^-1)",
+  "c_m": 1.0e-2,
+  "a_m": 200.0,
+
+  "_comment_ms_kinetics": "Mitchell-Schaeffer kinetics (ms) and normalised gate voltage",
+  "tau_in": 0.5,
+  "tau_out": 70.0,
+  "tau_open": 1200.0,
+  "v_gate": 0.13,
+
+  "_comment_tau_close": "Transmurally heterogeneous tau_close (ms)",
+  "tau_close_endo": 85.0,
+  "tau_close_mid": 80.0,
+  "tau_close_epi": 70.0,
+  "tau_close_rv": 80.0,
+
+  "_comment_region_sizing": "expand_layer_biv layer fractions (0-1) splitting the wall into endo/mid/epi",
+  "endo_size": 0.15,
+  "epi_size": 0.15,
+
+  "_comment_stimulus": "Stimulus mode can be \"shell\" or \"ball\"",
+  "stimulus_mode": "ball",
+  "stim_amp": 0.1,
+  "stim_dur_ms": 10.0,
+  "stim_layer_thickness_mm": 1.6,
+  "stim_radius_mm": 8.0,
+
+  "_comment_torso": "Homogeneous torso conductivity (S/cm)",
+  "sigma_t": 6.0e-4,
+
+  "_comment_time": "Time integration. dt_ms is the shared PDE/ODE step. t_end is different for different experiments",
+  "dt_ms": 0.5,
+  "t_end_transmembrane_ms": 200.0,
+  "t_end_ecg_ms": 400.0,
+  "t_end_cell_trace_ms": 800.0,
+  "snap_dt_ms": 2.0, 
+  "vm_gif_dt_ms": 5.0,
+  "n_electrodes": 6
+}
