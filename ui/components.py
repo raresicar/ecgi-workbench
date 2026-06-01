@@ -36,26 +36,33 @@ def databases() -> dict[str, Database]:
 
 
 @st.cache_data(show_spinner=False)
-def candidate_points(max_points: int = 700) -> np.ndarray:
-    """A subsample of EPI∪BASE points to draw as clickable scar-site markers.
-
-    The full 4914-point cloud is too dense to click cleanly, so we evenly thin it
-    to ``max_points`` while keeping the anterior (camera-facing) wall denser."""
+def candidate_points() -> np.ndarray:
+    """The full EPI∪BASE point cloud drawn as the clickable heart surface — every
+    point is a valid scar centre (no blocking Mesh3d)."""
     pts, _ = get_geometry().outer_surface
-    if pts.shape[0] <= max_points:
-        return pts
-    rng = np.random.default_rng(0)
-    view = np.array([0.45, -0.84, 0.31]); view /= np.linalg.norm(view)
-    # weight anterior points higher so the visible wall is well covered
-    w = (pts @ view - (pts @ view).min()) + 1.0
-    idx = rng.choice(pts.shape[0], size=max_points, replace=False, p=w / w.sum())
-    return pts[idx]
+    return pts
 
 
 def snap_to_epicardium(xyz) -> np.ndarray:
     """Nearest EPI∪BASE vertex to a clicked 3D point (the actual scar centre)."""
     pts, _ = get_geometry().outer_surface
     return pts[int(np.argmin(np.linalg.norm(pts - np.asarray(xyz, float), axis=1)))]
+
+
+@st.cache_data(show_spinner=False)
+def preset_sites(n: int = 10) -> list[tuple[str, tuple]]:
+    """A fallback set of ``n`` epicardial sites (farthest-point-sampled over the
+    anterior wall) for when 3D click selection isn't available."""
+    pts, _ = get_geometry().outer_surface
+    view = np.array([0.45, -0.84, 0.31]); view /= np.linalg.norm(view)
+    cand = pts[(pts @ view) >= np.percentile(pts @ view, 60.0)]
+    chosen = [int(np.argmax(cand @ view))]
+    dist = np.linalg.norm(cand - cand[chosen[0]], axis=1)
+    while len(chosen) < n:
+        nxt = int(np.argmax(dist)); chosen.append(nxt)
+        dist = np.minimum(dist, np.linalg.norm(cand - cand[nxt], axis=1))
+    return [(f"Site {k} ({c[0]:+.0f}, {c[1]:+.0f}, {c[2]:+.0f}) mm",
+             tuple(float(x) for x in c)) for k, c in enumerate(cand[chosen], 1)]
 
 
 @st.cache_data(show_spinner=False)

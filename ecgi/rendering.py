@@ -92,32 +92,28 @@ class Renderer:
         *,
         selected: np.ndarray | None = None,
         radius_mm: float | None = None,
-        title: str = "Click a point to place the infarct",
+        title: str = "Click a point on the heart to place the infarct",
     ) -> go.Figure:
-        """Opaque epicardium + a clickable Scatter3d of candidate scar centres.
+        """The epicardium as a *clickable point cloud* (NOT a Mesh3d).
 
-        Use with ``st.plotly_chart(fig, on_select="rerun")``; the clicked point's
+        An opaque ``Mesh3d`` intercepts Plotly's 3D click events, so the heart is
+        drawn as a dense ``Scatter3d`` instead — every point is a valid scar
+        centre. Use with ``st.plotly_chart(fig, on_select="rerun")``; the clicked
         (x, y, z) is snapped to the nearest epicardial vertex by the caller.
         """
-        pts, faces = geo.outer_surface
-        heart = go.Mesh3d(
-            x=pts[:, 0], y=pts[:, 1], z=pts[:, 2],
-            i=faces[:, 0], j=faces[:, 1], k=faces[:, 2],
-            color="#d9a5a1", opacity=1.0, hoverinfo="skip",
-            lighting=dict(ambient=0.75, diffuse=0.5, specular=0.1), showscale=False,
-        )
-        clickable = go.Scatter3d(
+        cloud = go.Scatter3d(
             x=candidates[:, 0], y=candidates[:, 1], z=candidates[:, 2],
-            mode="markers", name="candidate sites",
-            marker=dict(size=3, color="#1f6f54", opacity=0.45),
+            mode="markers", name="heart surface",
+            marker=dict(size=3.2, color=candidates[:, 1], colorscale="Reds",
+                        showscale=False, opacity=0.85),
             hovertemplate="place infarct here<extra></extra>",
         )
-        data = [heart, clickable]
+        data = [cloud]
         if selected is not None:
             data.append(go.Scatter3d(
                 x=[selected[0]], y=[selected[1]], z=[selected[2]], mode="markers",
                 name="infarct centre",
-                marker=dict(size=9, color="#1d4ed8", symbol="circle"),
+                marker=dict(size=11, color="#1d4ed8", line=dict(width=2, color="white")),
                 hovertemplate="infarct centre<extra></extra>",
             ))
         fig = go.Figure(data)

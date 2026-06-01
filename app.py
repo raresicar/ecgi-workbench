@@ -79,15 +79,24 @@ with lab_tab:
         fig = Renderer.picker(geo, C.candidate_points(),
                               selected=None if centre is None else np.asarray(centre),
                               radius_mm=radius)
-        event = st.plotly_chart(fig, key="picker", on_select="rerun", width=W)
+        event = st.plotly_chart(fig, key="picker", on_select="rerun",
+                                selection_mode="points", width=W)
         # capture the clicked point and snap it to the epicardium (the return type
         # supports both attribute and key access depending on Streamlit version)
-        pts = _clicked_points(event)
-        if pts:
-            p = pts[-1]
-            centre = C.snap_to_epicardium((p["x"], p["y"], p["z"]))
-            st.session_state["centre"] = tuple(float(x) for x in centre)
-            st.rerun()
+        for p in _clicked_points(event):
+            if all(k in p for k in ("x", "y", "z")):
+                c = C.snap_to_epicardium((p["x"], p["y"], p["z"]))
+                if st.session_state.get("centre") != tuple(float(x) for x in c):
+                    st.session_state["centre"] = tuple(float(x) for x in c)
+                    st.rerun()
+
+        with st.expander("Click not registering? Pick a preset site instead"):
+            sites = C.preset_sites()
+            ch = st.selectbox("Preset infarct site", range(len(sites)),
+                              format_func=lambda i: sites[i][0])
+            if st.button("Use this site", width=W):
+                st.session_state["centre"] = sites[ch][1]
+                st.rerun()
 
     with right:
         st.markdown("**Step 2 — simulate & reconstruct**")
