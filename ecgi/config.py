@@ -37,6 +37,11 @@ class Database:
     def is_available(self) -> bool:
         return self.pod_basis.exists() and self.extended_dir.exists()
 
+    @property
+    def n_extended(self) -> int:
+        """How many torso-extended modes are available (caps usable n_modes)."""
+        return len(list(self.extended_dir.glob("extended_pod_mode_*.npz")))
+
 
 @dataclass(frozen=True)
 class ForwardDefaults:
@@ -50,7 +55,7 @@ class ForwardDefaults:
     t_end_ms: float = 200.0
     dt_ms: float = 0.5
     snapshot_every_ms: float = 5.0
-    #: tau_out is divided by this inside a scar ball (Boulakia uses 10; thesis 100)
+    #: tau_out is divided by this inside a scar ball so it cannot stay activated
     infarct_tau_out_factor: float = 0.01
 
 
@@ -62,8 +67,8 @@ def available_databases() -> dict[str, Database]:
     """Discover vendored POD databases (those with a basis + extended modes)."""
     out: dict[str, Database] = {}
     specs = {
-        "infarction": "Healthy + 18 infarcts (Boulakia §3.3) — the scar-localisation prior",
-        "four_params": "Healthy, ±20% in tau_in/C_m/A_m/tau_close^RV — low n-width prior",
+        "infarction": "Healthy beat + infarcts at many sites — the scar prior",
+        "four_params": "Healthy beats, ±20% ionic-parameter variation — healthy prior",
     }
     for name, desc in specs.items():
         db = Database(

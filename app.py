@@ -6,11 +6,16 @@ laptop browser:
     streamlit run app.py
 
 Workflow (Localisation lab):
-  1. Click a point on the heart to place an infarct, set its radius.
+  1. Choose tissue: an infarct placed *between* the training infarct sites
+     (an in-distribution test), or a healthy beat.
   2. Simulate the beat (monodomain V_m -> extracellular HSP).
-  3. Reconstruct the HSP across time frames with the stabFEM inverse on a chosen
-     POD database, and see how/where the infarct is localised.
-  4. Play the frames as an animation so the infarct's evolution is visible.
+  3. Reconstruct the HSP across time frames with the stabFEM inverse, on the
+     matching POD database (scar prior for infarcts, healthy prior for healthy).
+  4. Inspect truth vs recovered per frame, the localisation error, and play the
+     frames as an animation so the infarct's evolution is visible.
+
+The app writes nothing to disk: the only file-writing step (the region marker)
+runs in a temporary directory, and all 3D views render in the browser.
 """
 from __future__ import annotations
 
@@ -22,36 +27,33 @@ from ecgi.rendering import Renderer
 from ui import components as C
 
 st.set_page_config(page_title="ECGi Workbench", page_icon="🫀", layout="wide")
-W = "stretch"  # st width for full-width charts
+W = "stretch"
 
 geo = C.get_geometry()
 sim = C.get_simulator(geo)
 inv = C.get_inverse(geo)
 dbs = C.databases()
 
-
-def _clicked_points(event) -> list:
-    """Pull clicked points out of st.plotly_chart's on_select return value,
-    tolerating both dict-style and attribute-style state objects."""
-    if not event:
-        return []
-    sel = event.get("selection") if isinstance(event, dict) else getattr(event, "selection", None)
-    if sel is None:
-        return []
-    pts = sel.get("points") if isinstance(sel, dict) else getattr(sel, "points", None)
-    return list(pts) if pts else []
-
 # ----------------------------------------------------------------------------
-# Sidebar: inverse / simulation settings (apply to the lab)
+# Sidebar: tissue (-> database) + inverse / simulation settings
 # ----------------------------------------------------------------------------
 st.sidebar.title("🫀 ECGi Workbench")
 st.sidebar.caption("Live forward & inverse cardiac electrophysiology (stabFEM).")
 
+tissue = st.sidebar.radio("Tissue", ["Infarct", "Healthy"], horizontal=True)
+db_name = "infarction" if tissue == "Infarct" else "four_params"
+database = dbs[db_name]
+st.sidebar.caption(f"Prior database: **{db_name}** — {database.description}")
+
+# clear stale results when the tissue (hence database) changes
+if st.session_state.get("last_tissue") != tissue:
+    for k in ("series", "result", "spec"):
+        st.session_state.pop(k, None)
+    st.session_state["last_tissue"] = tissue
+
 st.sidebar.header("Inverse settings")
-db_name = st.sidebar.selectbox("POD database (prior)", list(dbs),
-                               format_func=lambda n: f"{n}", help="The data-enriched prior basis.")
-st.sidebar.caption(dbs[db_name].description)
-n_modes = st.sidebar.slider("POD modes (n_modes)", 2, 30, 9,
+max_modes = max(2, database.n_extended)
+n_modes = st.sidebar.slider("POD modes (n_modes)", 2, max_modes, min(9, max_modes),
                             help="The real regulariser: more modes = richer but noisier.")
 noise = st.sidebar.slider("Measurement noise (% of BSP RMS)", 0, 20, 0, 1)
 region = st.sidebar.radio("Electrodes", ["Full torso", "Anterior patch (~27%)"])
@@ -69,71 +71,61 @@ forward_tab, lab_tab = st.tabs(["① Forward viewer", "② Infarct-localisation 
 # Localisation lab
 # ============================================================================
 with lab_tab:
-    st.subheader("Place an infarct, simulate, and localise it")
+    spec = InfarctSpec.healthy()
     left, right = st.columns([3, 2])
 
     with left:
-        st.markdown("**Step 1 — click a point on the heart to place the infarct**")
-        centre = st.session_state.get("centre")
-        radius = st.slider("Scar radius (mm)", 6.0, 16.0, 12.0, 0.5)
-        fig = Renderer.picker(geo, C.candidate_points(),
-                              selected=None if centre is None else np.asarray(centre),
-                              radius_mm=radius)
-        event = st.plotly_chart(fig, key="picker", on_select="rerun",
-                                selection_mode="points", width=W)
-        # capture the clicked point and snap it to the epicardium (the return type
-        # supports both attribute and key access depending on Streamlit version)
-        for p in _clicked_points(event):
-            if all(k in p for k in ("x", "y", "z")):
-                c = C.snap_to_epicardium((p["x"], p["y"], p["z"]))
-                if st.session_state.get("centre") != tuple(float(x) for x in c):
-                    st.session_state["centre"] = tuple(float(x) for x in c)
-                    st.rerun()
-
-        with st.expander("Click not registering? Pick a preset site instead"):
-            sites = C.preset_sites()
-            ch = st.selectbox("Preset infarct site", range(len(sites)),
-                              format_func=lambda i: sites[i][0])
-            if st.button("Use this site", width=W):
-                st.session_state["centre"] = sites[ch][1]
-                st.rerun()
+        if tissue == "Infarct":
+            st.markdown("**Step 1 — position the infarct between two training sites**")
+            sites = C.training_centres()
+            pairs = C.adjacent_pairs()
+            pi = st.selectbox("Between which two training sites?", range(len(pairs)),
+                              format_func=lambda k: f"site {pairs[k][0] + 1}  ↔  site {pairs[k][1] + 1}")
+            i, j = pairs[pi]
+            blend = st.slider("Position along the segment", 0.0, 1.0, 0.5, 0.05,
+                              help="0 = first site, 1 = second site, 0.5 = midway between them")
+            radius = st.slider("Scar radius (mm)", 6.0, 16.0, 12.0, 0.5)
+            centre = C.between_centre(i, j, blend)
+            spec = InfarctSpec(centre_mm=tuple(float(x) for x in centre), radius_mm=radius)
+            st.plotly_chart(Renderer.sites(geo, sites, selected=centre), width=W)
+        else:
+            st.markdown("**Step 1 — healthy beat (no infarct)**")
+            st.info("A healthy beat will be simulated and reconstructed with the healthy prior.")
+            st.plotly_chart(Renderer.sites(geo, C.training_centres()), width=W)
 
     with right:
         st.markdown("**Step 2 — simulate & reconstruct**")
-        if centre is None:
-            st.info("Click a green candidate point on the heart to choose the infarct centre.")
-        else:
-            st.success(f"Infarct centre: ({centre[0]:+.0f}, {centre[1]:+.0f}, {centre[2]:+.0f}) mm, "
-                       f"r = {radius:.0f} mm")
-            if st.button("▶ Simulate & reconstruct", type="primary", width=W):
-                spec = InfarctSpec(centre_mm=tuple(float(x) for x in centre), radius_mm=radius)
-                bar = st.progress(0.0, text="Forward: monodomain + extracellular…")
-                res = sim.simulate(spec, t_end_ms=float(t_end),
-                                   progress=lambda f: bar.progress(min(0.5 * f, 0.5)))
-                # evenly-spaced frames for reconstruction/animation
-                idx = np.unique(np.linspace(0, res.snapshot_count() - 1, n_frames).round().astype(int))
-                bar.progress(0.5, text="Inverse: stabFEM reconstruction per frame…")
-                series = inv.reconstruct_series(
-                    res.hsp[idx], res.times_ms[idx], database=dbs[db_name], n_modes=n_modes,
-                    noise_frac=noise / 100.0, gamma_reg=gamma_reg, measured_vertices=measured,
-                    progress=lambda f: bar.progress(0.5 + 0.5 * f))
-                bar.empty()
-                st.session_state.update(result=res, spec=spec, frame_idx=idx, series=series)
+        if tissue == "Infarct":
+            st.success(f"Infarct between site {i + 1} and site {j + 1} "
+                       f"({centre[0]:+.0f}, {centre[1]:+.0f}, {centre[2]:+.0f}) mm, r = {radius:.0f} mm")
+        if st.button("▶ Simulate & reconstruct", type="primary", width=W):
+            bar = st.progress(0.0, text="Forward: monodomain + extracellular…")
+            res = sim.simulate(spec, t_end_ms=float(t_end),
+                               progress=lambda f: bar.progress(min(0.5 * f, 0.5)))
+            idx = np.unique(np.linspace(0, res.snapshot_count() - 1, n_frames).round().astype(int))
+            bar.progress(0.5, text="Inverse: stabFEM reconstruction per frame…")
+            series = inv.reconstruct_series(
+                res.hsp[idx], res.times_ms[idx], database=database, n_modes=n_modes,
+                noise_frac=noise / 100.0, gamma_reg=gamma_reg, measured_vertices=measured,
+                progress=lambda f: bar.progress(0.5 + 0.5 * f))
+            bar.empty()
+            st.session_state.update(result=res, spec=spec, frame_idx=idx, series=series)
 
         series = st.session_state.get("series")
         if series:
             res = st.session_state["result"]; spec = st.session_state["spec"]
-            idx = st.session_state["frame_idx"]
-            times = res.times_ms[idx]
+            idx = st.session_state["frame_idx"]; times = res.times_ms[idx]
             recovered = np.array([r.hsp_recovered for r in series])
-            truth = np.array([r.hsp_truth for r in series])
-            # per-frame localisation error (recovered extremum vs true scar)
-            errs = [C.localisation_error_mm(geo, recovered[f], spec.centre())[0] for f in range(len(idx))]
-            best = int(np.argmin(errs))
-            st.metric("best localisation", f"{errs[best]:.0f} mm",
-                      help=f"at t = {times[best]:.0f} ms (recovered extremum vs true centre)")
-            st.caption(f"cosine at that frame: {series[best].cosine:.3f} · "
-                       f"MINRES iters: {series[best].iterations}")
+            best = int(np.argmax([r.cosine for r in series]))
+            st.metric("best cosine", f"{series[best].cosine:.3f}", help=f"at t = {times[best]:.0f} ms")
+            if not spec.is_healthy:
+                errs = [C.localisation_error_mm(geo, recovered[f], spec.centre())[0]
+                        for f in range(len(idx))]
+                b = int(np.argmin(errs))
+                st.metric("best localisation", f"{errs[b]:.0f} mm",
+                          help=f"recovered extremum vs true scar, at t = {times[b]:.0f} ms")
+            st.caption(f"database: {db_name} · n_modes={n_modes} · noise={noise}% · "
+                       f"MINRES iters≈{series[best].iterations}")
 
     # ---- results: single-frame or animation -------------------------------
     series = st.session_state.get("series")
@@ -173,12 +165,12 @@ with forward_tab:
     st.subheader("Forward simulation viewer")
     res = st.session_state.get("result")
     if res is None:
-        st.info("Use the **Localisation lab** to place an infarct and simulate; the beat shows here.")
+        st.info("Use the **Localisation lab** to choose tissue and simulate; the beat shows here.")
     else:
         spec = st.session_state["spec"]
-        st.caption(f"Infarct r={spec.radius_mm:.0f} mm — {res.snapshot_count()} snapshots over {t_end} ms.")
+        kind = "healthy" if spec.is_healthy else f"infarct r={spec.radius_mm:.0f} mm"
+        st.caption(f"{kind} — {res.snapshot_count()} snapshots over {t_end} ms.")
         quantity = st.radio("Field", ["V_m (transmembrane)", "u_e (heart surface)"], horizontal=True)
-        # animate over a thinned set of frames (keep the figure light)
         fidx = np.unique(np.linspace(0, res.snapshot_count() - 1, min(res.snapshot_count(), 12))
                          .round().astype(int))
         times = res.times_ms[fidx]

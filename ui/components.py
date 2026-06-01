@@ -35,34 +35,51 @@ def databases() -> dict[str, Database]:
     return available_databases()
 
 
-@st.cache_data(show_spinner=False)
-def candidate_points() -> np.ndarray:
-    """The full EPI∪BASE point cloud drawn as the clickable heart surface — every
-    point is a valid scar centre (no blocking Mesh3d)."""
-    pts, _ = get_geometry().outer_surface
-    return pts
-
-
 def snap_to_epicardium(xyz) -> np.ndarray:
-    """Nearest EPI∪BASE vertex to a clicked 3D point (the actual scar centre)."""
+    """Nearest EPI∪BASE vertex to a 3D point (so a chosen centre lies on the wall)."""
     pts, _ = get_geometry().outer_surface
     return pts[int(np.argmin(np.linalg.norm(pts - np.asarray(xyz, float), axis=1)))]
 
 
+# The infarction database was trained with scars at these epicardial sites; we
+# recompute them (farthest-point sampling over the anterior wall, the same recipe)
+# so a held-out infarct can be placed *between* them — an in-distribution test.
+_N_TRAIN_SITES = 18
+_SCORE_PERCENTILE = 88.0
+
+
 @st.cache_data(show_spinner=False)
-def preset_sites(n: int = 10) -> list[tuple[str, tuple]]:
-    """A fallback set of ``n`` epicardial sites (farthest-point-sampled over the
-    anterior wall) for when 3D click selection isn't available."""
+def training_centres() -> np.ndarray:
+    """The (n, 3) epicardial sites the scar database was trained on."""
     pts, _ = get_geometry().outer_surface
     view = np.array([0.45, -0.84, 0.31]); view /= np.linalg.norm(view)
-    cand = pts[(pts @ view) >= np.percentile(pts @ view, 60.0)]
+    cand = pts[(pts @ view) >= np.percentile(pts @ view, _SCORE_PERCENTILE)]
     chosen = [int(np.argmax(cand @ view))]
     dist = np.linalg.norm(cand - cand[chosen[0]], axis=1)
-    while len(chosen) < n:
+    while len(chosen) < _N_TRAIN_SITES:
         nxt = int(np.argmax(dist)); chosen.append(nxt)
         dist = np.minimum(dist, np.linalg.norm(cand - cand[nxt], axis=1))
-    return [(f"Site {k} ({c[0]:+.0f}, {c[1]:+.0f}, {c[2]:+.0f}) mm",
-             tuple(float(x) for x in c)) for k, c in enumerate(cand[chosen], 1)]
+    return cand[chosen]
+
+
+@st.cache_data(show_spinner=False)
+def adjacent_pairs() -> list[tuple[int, int]]:
+    """Each training site paired with its nearest neighbour (unique, sorted) —
+    the segments a held-out infarct can sit *between*."""
+    c = training_centres()
+    seen: set[tuple[int, int]] = set()
+    for i in range(len(c)):
+        d = np.linalg.norm(c - c[i], axis=1); d[i] = np.inf
+        j = int(np.argmin(d))
+        seen.add((min(i, j), max(i, j)))
+    return sorted(seen)
+
+
+def between_centre(i: int, j: int, blend: float) -> np.ndarray:
+    """A point on the segment between training sites ``i`` and ``j`` (``blend`` in
+    [0, 1]), snapped to the epicardium."""
+    c = training_centres()
+    return snap_to_epicardium((1.0 - blend) * c[i] + blend * c[j])
 
 
 @st.cache_data(show_spinner=False)

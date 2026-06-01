@@ -52,6 +52,8 @@ class Renderer:
             scene=dict(
                 xaxis=dict(visible=False), yaxis=dict(visible=False), zaxis=dict(visible=False),
                 aspectmode="data", camera=camera or _HEART_CAMERA,
+                # keep the user's rotation across reruns/frames (no snap-back)
+                uirevision="ecgi",
             ),
         )
         return fig
@@ -85,43 +87,44 @@ class Renderer:
     # Interactive infarct picker: an opaque heart + clickable candidate sites
     # ------------------------------------------------------------------
     @classmethod
-    def picker(
+    def sites(
         cls,
         geo: Geometry,
-        candidates: np.ndarray,
+        train_sites: np.ndarray,
         *,
         selected: np.ndarray | None = None,
-        radius_mm: float | None = None,
-        title: str = "Click a point on the heart to place the infarct",
+        title: str = "Training infarct sites and the chosen position",
     ) -> go.Figure:
-        """The epicardium as a *clickable point cloud* (NOT a Mesh3d).
+        """Read-only overview: the heart (faint cloud), the database's training
+        infarct sites (grey), and the chosen held-out position between them (blue).
 
-        An opaque ``Mesh3d`` intercepts Plotly's 3D click events, so the heart is
-        drawn as a dense ``Scatter3d`` instead — every point is a valid scar
-        centre. Use with ``st.plotly_chart(fig, on_select="rerun")``; the clicked
-        (x, y, z) is snapped to the nearest epicardial vertex by the caller.
+        The default camera is the anterior view, so the chosen infarct — which
+        sits between the training sites on the anterior wall — is always visible.
         """
-        cloud = go.Scatter3d(
-            x=candidates[:, 0], y=candidates[:, 1], z=candidates[:, 2],
-            mode="markers", name="heart surface",
-            marker=dict(size=3.2, color=candidates[:, 1], colorscale="Reds",
-                        showscale=False, opacity=0.85),
-            hovertemplate="place infarct here<extra></extra>",
-        )
-        data = [cloud]
+        cloud_pts, _ = geo.outer_surface
+        data = [
+            go.Scatter3d(
+                x=cloud_pts[:, 0], y=cloud_pts[:, 1], z=cloud_pts[:, 2],
+                mode="markers", name="heart",
+                marker=dict(size=2, color="#e9c9c6", opacity=0.35), hoverinfo="skip"),
+            go.Scatter3d(
+                x=train_sites[:, 0], y=train_sites[:, 1], z=train_sites[:, 2],
+                mode="markers", name="training infarcts",
+                marker=dict(size=5, color="#6b7280"),
+                hovertemplate="training site<extra></extra>"),
+        ]
         if selected is not None:
             data.append(go.Scatter3d(
                 x=[selected[0]], y=[selected[1]], z=[selected[2]], mode="markers",
-                name="infarct centre",
-                marker=dict(size=11, color="#1d4ed8", line=dict(width=2, color="white")),
-                hovertemplate="infarct centre<extra></extra>",
-            ))
+                name="chosen infarct",
+                marker=dict(size=12, color="#1d4ed8", line=dict(width=2, color="white")),
+                hovertemplate="chosen infarct<extra></extra>"))
         fig = go.Figure(data)
         fig.update_layout(
-            title=title, height=560, margin=dict(l=0, r=0, t=36, b=0),
-            showlegend=False,
+            title=title, height=520, margin=dict(l=0, r=0, t=36, b=0), showlegend=False,
             scene=dict(xaxis=dict(visible=False), yaxis=dict(visible=False),
-                       zaxis=dict(visible=False), aspectmode="data", camera=_HEART_CAMERA),
+                       zaxis=dict(visible=False), aspectmode="data",
+                       camera=_HEART_CAMERA, uirevision="ecgi"),
         )
         return fig
 
@@ -184,6 +187,8 @@ class Renderer:
             updatemenus=[play], sliders=[slider],
             scene=dict(xaxis=dict(visible=False), yaxis=dict(visible=False),
                        zaxis=dict(visible=False), aspectmode="data",
-                       camera=camera or _HEART_CAMERA),
+                       camera=camera or _HEART_CAMERA,
+                       # preserve the user's rotation while frames play (no recentre)
+                       uirevision="ecgi"),
         )
         return fig
