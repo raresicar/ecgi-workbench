@@ -171,20 +171,20 @@ with forward_tab:
         spec = st.session_state["spec"]
         kind = "healthy" if spec.is_healthy else f"infarct r={spec.radius_mm:.0f} mm"
         st.caption(f"{kind} — {res.snapshot_count()} snapshots over {t_end} ms.")
-        quantity = st.radio("Field", ["V_m (transmembrane)", "u_e (heart surface)"], horizontal=True)
+        quantity = st.radio("Field", ["Transmembrane", "Extracellular"], horizontal=True)
         fidx = np.unique(np.linspace(0, res.snapshot_count() - 1, min(res.snapshot_count(), 12))
                          .round().astype(int))
         times = res.times_ms[fidx]
-        if quantity.startswith("V_m"):
+        if quantity == "Transmembrane":
             pts, faces = geo.heart_surface
             st.plotly_chart(
                 Renderer.animation(pts, faces, res.vm[fidx], times, colorscale="Turbo",
                                    cmin=-80.0, cmax=20.0, colorbar_title="V_m [mV]",
-                                   title="V_m over time — press ▶"), width=W)
+                                   title="Transmembrane over time — press ▶"), width=W)
         else:
             op, of = geo.outer_surface
             vmax = float(np.abs(res.hsp).max())
             st.plotly_chart(
                 Renderer.animation(op, of, res.hsp[fidx], times, colorscale="RdBu", reversescale=True,
                                    cmin=-vmax, cmax=vmax, colorbar_title="u_e [mV]",
-                                   title="u_e over time — press ▶"), width=W)
+                                   title="Extracellular over time — press ▶"), width=W)
