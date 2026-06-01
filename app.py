@@ -116,8 +116,9 @@ with lab_tab:
             res = st.session_state["result"]; spec = st.session_state["spec"]
             idx = st.session_state["frame_idx"]; times = res.times_ms[idx]
             recovered = np.array([r.hsp_recovered for r in series])
-            best = int(np.argmax([r.cosine for r in series]))
-            st.metric("best cosine", f"{series[best].cosine:.3f}", help=f"at t = {times[best]:.0f} ms")
+            best = int(np.argmin([r.rel_l2 for r in series]))
+            st.metric("lowest rel. L² error", f"{series[best].rel_l2:.3f}",
+                      help=f"‖recovered − truth‖ / ‖truth‖, at t = {times[best]:.0f} ms")
             if not spec.is_healthy:
                 errs = [C.localisation_error_mm(geo, recovered[f], spec.centre())[0]
                         for f in range(len(idx))]
@@ -147,7 +148,7 @@ with lab_tab:
             g1.plotly_chart(Renderer.hsp(geo, truth[f], title=f"Truth HSP  t={times[f]:.0f} ms", vmax=vmax),
                             width=W)
             g2.plotly_chart(Renderer.hsp(geo, recovered[f],
-                            title=f"Recovered  t={times[f]:.0f} ms  cos={series[f].cosine:.2f}", vmax=vmax),
+                            title=f"Recovered  t={times[f]:.0f} ms  rel-L²={series[f].rel_l2:.2f}", vmax=vmax),
                             width=W)
         else:
             field = truth if "truth" in view else recovered
