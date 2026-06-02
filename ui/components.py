@@ -14,12 +14,13 @@ from ecgi.geometry import Geometry
 from ecgi.forward import ForwardSimulator
 from ecgi.inverse import InverseSolver
 
-
+# cache resource: for one shared, mutable. unpickable object -> returns the same
+# instance to every rerun and every browser session
 @st.cache_resource(show_spinner="Loading heart & torso meshes…")
 def get_geometry() -> Geometry:
     return Geometry()
 
-
+# _geo in order to avoid hashing (hashed in order to decide 'same input -> cached results')
 @st.cache_resource(show_spinner="Preparing the forward simulator…")
 def get_simulator(_geo: Geometry) -> ForwardSimulator:
     return ForwardSimulator(_geo)
@@ -29,7 +30,8 @@ def get_simulator(_geo: Geometry) -> ForwardSimulator:
 def get_inverse(_geo: Geometry) -> InverseSolver:
     return InverseSolver(_geo)
 
-
+# cache data: for return values that can be copied -> returns fresh copy per call
+# but skips recomputation
 @st.cache_data(show_spinner=False)
 def databases() -> dict[str, Database]:
     return available_databases()
@@ -52,6 +54,7 @@ _SCORE_PERCENTILE = 88.0
 def training_centres() -> np.ndarray:
     """The (n, 3) epicardial sites the scar database was trained on."""
     pts, _ = get_geometry().outer_surface
+    # anterior view, same as in thesis
     view = np.array([0.45, -0.84, 0.31]); view /= np.linalg.norm(view)
     cand = pts[(pts @ view) >= np.percentile(pts @ view, _SCORE_PERCENTILE)]
     chosen = [int(np.argmax(cand @ view))]

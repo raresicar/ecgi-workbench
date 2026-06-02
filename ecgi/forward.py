@@ -4,8 +4,7 @@ Given an :class:`~ecgi.cases.InfarctSpec`, run the Mitchell-Schaeffer monodomain
 model on the fixed heart mesh and, at each snapshot, solve the pure-Neumann
 extracellular problem for u_e and read its trace on the EPI∪BASE interface. This
 mirrors the database generator's per-sample forward exactly, but as a reusable
-object driven by the interactive UI. Heavy (a few seconds), so it runs on the
-workstation where dolfinx/PETSc live.
+object driven by the interactive UI.
 """
 from __future__ import annotations
 

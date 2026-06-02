@@ -47,15 +47,14 @@ class Database:
 class ForwardDefaults:
     """Default time integration window for an interactive forward run.
 
-    Shorter than the database's 400 ms so a single live simulation stays snappy,
-    while still spanning depolarisation and the early plateau where an infarct's
-    signature appears.
+    Shorter than the database's 400 ms, while still spanning depolarisation 
+    and the early plateau where an infarct's signature appears.
     """
 
     t_end_ms: float = 200.0
     dt_ms: float = 0.5
     snapshot_every_ms: float = 5.0
-    #: tau_out is divided by this inside a scar ball so it cannot stay activated
+    # tau_out is multiplied by this inside a scar ball so it cannot activate
     infarct_tau_out_factor: float = 0.01
 
 

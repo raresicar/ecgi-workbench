@@ -38,7 +38,7 @@ class ForwardResult:
 
     times_ms: np.ndarray            # (n_snap,)
     vm: np.ndarray                  # (n_snap, n_heart_vertices)  transmembrane potential
-    hsp: np.ndarray                 # (n_snap, n_outer)           heart-surface potential
+    hsp: np.ndarray                 # (n_snap, n_outer)           extracellular potential
     spec: InfarctSpec
 
     def snapshot_count(self) -> int:

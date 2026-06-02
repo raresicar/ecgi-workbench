@@ -1,4 +1,4 @@
-"""ECGi Workbench — an interactive forward/inverse cardiac-electrophysiology app.
+"""StabFEM ECGi Workbench — an interactive forward/inverse cardiac-electrophysiology app.
 
 The package wraps the thesis' stabFEM ECGi pipeline (vendored under ``_vendor/``)
 in a small, modular, object-oriented API:

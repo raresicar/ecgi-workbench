@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 
 from .geometry import Geometry
 
-# anterior-ish camera, echoing the matplotlib elev=18 / azim=-62 used in the thesis
+# anterior camera, echoing the matplotlib elev=18 / azim=-62 used in the thesis
 _HEART_CAMERA = dict(eye=dict(x=0.9, y=-1.7, z=0.6), up=dict(x=0, y=0, z=1))
 _TORSO_CAMERA = dict(eye=dict(x=0.0, y=-1.9, z=0.4), up=dict(x=0, y=0, z=1))
 

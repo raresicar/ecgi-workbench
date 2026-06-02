@@ -43,9 +43,7 @@ def _allow_gmsh_off_main_thread() -> None:
 
     gmsh installs a SIGINT handler via ``signal.signal``, which raises
     ``ValueError: signal only works in main thread`` when the mesh is loaded off
-    the main thread. We only lose Ctrl-C interruption *of gmsh*, which a web app
-    never needs, so we swallow that specific failure and otherwise defer to the
-    real ``signal.signal``.
+    the main thread.
     """
     import signal
 

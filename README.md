@@ -6,8 +6,8 @@ simulate the beat, and watch the data-enriched stabFEM inverse try to recover th
 heart-surface potential and localise the scar — across time, with adjustable
 noise, electrode coverage, and POD-basis size.
 
-It runs **live on the workstation** (where dolfinx/PETSc/gmsh are installed); the
-browser UI is forwarded to your laptop by VS Code's SSH port forwarding.
+It runs **live on the HP z8 workstation** (where dolfinx/PETSc/gmsh are installed); the
+browser UI is forwarded to laptop by VS Code's SSH port forwarding.
 
 ## Run
 
@@ -22,15 +22,15 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Open the `localhost` URL Streamlit prints — VS Code forwards the port to your
+Open the `localhost` URL Streamlit prints — VS Code forwards the port to 
 laptop automatically.
 
 ## Workflow
 
 **② Infarct-localisation lab**
-1. **Click a point on the heart** to place an infarct; set its **radius**.
+1. **Select a point between to training sited** to place an infarct; set its **radius**.
 2. **Simulate & reconstruct** — runs the monodomain V_m → extracellular HSP
-   forward solve, then the stabFEM inverse on every time frame.
+   forward solve -> BSP measurements, then the stabFEM inverse on every time frame.
 3. Read the **localisation error**, **cosine** and **MINRES iterations**; compare
    **truth vs recovered** HSP per frame.
 4. **Animate** truth or recovered HSP (play button) to see the infarct evolve.
